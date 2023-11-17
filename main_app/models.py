@@ -30,4 +30,4 @@ class Review(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='reviews')
 
     def __str__(self):
-        return f'review id: {self.id}'
+        return f'review id: {self.id} {self.game}'

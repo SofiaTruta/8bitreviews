@@ -12,19 +12,24 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         user = User.objects.create_user(**data)
         return user
 
-
+# GROUP
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
         fields = ['url', 'name']
 
-class GameSerializer(serializers.HyperlinkedModelSerializer):
+# GAME
+class GameSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     class Meta:
         model = Game
         fields = ['id', 'title', 'genre', 'description', 'release_date', 'cover_url', 'user']
 
-class ReviewSerializer(serializers.HyperlinkedModelSerializer):
+# REVIEW
+class ReviewSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    game = serializers.PrimaryKeyRelatedField(queryset=Game.objects.all())
     class Meta:
         model = Review
-        fields = ['id', 'score', 'date_submitted', 'user', 'game']
+        fields = ['id', 'score', 'review','date_submitted', 'user', 'game']
 

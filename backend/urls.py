@@ -29,5 +29,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('new-user/', views.CreateUserAPIView.as_view())
+    path('new-user/', views.CreateUserAPIView.as_view()),
+    path('new-game/', views.CreateGameAPIView.as_view()),
+    path('games/<int:game_id>/new-review', views.CreateReviewAPIView.as_view()),
+    path('games/<int:game_id>/reviews/<int:review_id>', views.ReviewAPIView.as_view()),
+    path('games/<int:game_id>/edit', views.EditGameAPIView.as_view())
 ]
