@@ -1,13 +1,19 @@
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
+from django.core.cache import cache
+from django.middleware.csrf import get_token
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.authentication import TokenAuthentication
 
 from .models import Game, Review
 from .serializers import UserSerializer, GroupSerializer, GameSerializer, ReviewSerializer
+
+
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet): #will display the whole model and even edit data from an 
     queryset = User.objects.all().order_by('-date_joined')
@@ -57,9 +63,17 @@ class LoginAndTokenView(APIView):
                                  })
         else:
             return JsonResponse({'message': 'Invalid credentials'}, status=401)
-        
+
+class LogoutView(APIView):
+    def post(self, request):
+        token = request.data.get('token')
+        cache.set(token, 'logged_out', timeout=None)
+        return JsonResponse({'message': 'logged out successfully'})
+
 #GAME
 class CreateGameAPIView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
     def post(self, request):
         serializer = GameSerializer(data=request.data)
         if serializer.is_valid():
@@ -118,3 +132,9 @@ class ReviewAPIView(APIView):
                 serializer.save()
                 return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# CSRF EXPOSURE
+def csrf_token_view(request):
+    csrf_token = get_token(request)
+    return JsonResponse({'csrf_token': csrf_token})

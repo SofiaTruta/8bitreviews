@@ -18,5 +18,8 @@ urlpatterns = [
     path('games/<int:game_id>/new-review', views.CreateReviewAPIView.as_view()),
     path('games/<int:game_id>/reviews/<int:review_id>', views.ReviewAPIView.as_view()),
     path('games/<int:game_id>/edit', views.EditGameAPIView.as_view()),
-    path('api/login', views.LoginAndTokenView.as_view(), name='login')
+    path('api/login', views.LoginAndTokenView.as_view()),
+    path('api/logout', views.LogoutView.as_view()),
+    path('get-csrf-token/', views.csrf_token_view),
+
 ]
