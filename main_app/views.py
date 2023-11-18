@@ -1,7 +1,11 @@
 from django.contrib.auth.models import User, Group
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
 from rest_framework import viewsets, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from .models import Game, Review
 from .serializers import UserSerializer, GroupSerializer, GameSerializer, ReviewSerializer
 
@@ -34,7 +38,26 @@ class CreateUserAPIView(APIView):
             return Response({'message':'user created ok', 'user_data':serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class LoginAndTokenView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
 
+        print('username', username)
+        print('password', password)
+
+        user = authenticate(request, username=username, password=password)
+        print(user)
+        if user is not None:
+            login(request, user)
+            refresh = RefreshToken.for_user(user)
+            return JsonResponse({'message': 'Login successful',
+                                 'refresh': str(refresh),
+                                 'access': str(refresh.access_token)
+                                 })
+        else:
+            return JsonResponse({'message': 'Invalid credentials'}, status=401)
+        
 #GAME
 class CreateGameAPIView(APIView):
     def post(self, request):
