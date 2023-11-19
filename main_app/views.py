@@ -14,11 +14,12 @@ from .models import Game, Review
 from .serializers import UserSerializer, GroupSerializer, GameSerializer, ReviewSerializer
 
 
-
+# just grabbing information
 class UserViewSet(viewsets.ReadOnlyModelViewSet): #will display the whole model and even edit data from an 
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated] # if not authenticated we can't consume API
+
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet): 
     queryset = Group.objects.all()
@@ -35,6 +36,16 @@ class ReviewViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+class UserDetailView(APIView):
+    def get(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+            serializer = UserSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'error': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+
 #USER
 class CreateUserAPIView(APIView):
     def post(self, request):
@@ -49,15 +60,22 @@ class LoginAndTokenView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
 
-        print('username', username)
-        print('password', password)
+        # print('received username', username)
+        # print('received password', password)
 
         user = authenticate(request, username=username, password=password)
-        print(user)
+        # print(user)
         if user is not None:
             login(request, user)
             refresh = RefreshToken.for_user(user)
+
+            user_id=user.id
+            username = user.username
+            print('username', username)
+
             return JsonResponse({'message': 'Login successful',
+                                 'user_id': user_id,
+                                 'username': username,
                                  'refresh': str(refresh),
                                  'access': str(refresh.access_token)
                                  })
