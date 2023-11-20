@@ -54,28 +54,28 @@ class GameViewSet(viewsets.ModelViewSet):
         }
         return Response(response_data, status=status.HTTP_200_OK)
 
-class ReviewViewSet(viewsets.ReadOnlyModelViewSet):
+class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class UserDetailView(APIView):
-    def get(self, request, pk):
-        try:
-            user = User.objects.get(pk=pk)
-            print(user)
-            user_serializer = UserSerializer(user)
-            games_serializer = GameSerializer(user.game_set.all(), many=True)
-            reviews_serializer = ReviewSerializer(user.reviews.all(), many=True)
+# class UserDetailView(APIView):
+#     def get(self, request, pk):
+#         try:
+#             user = User.objects.get(pk=pk)
+#             print(user)
+#             user_serializer = UserSerializer(user)
+#             games_serializer = GameSerializer(user.game_set.all(), many=True)
+#             reviews_serializer = ReviewSerializer(user.reviews.all(), many=True)
 
-            response_data ={
-                'user': user_serializer.data,
-                'games': games_serializer.data,
-                'reviews': reviews_serializer.data
-            }
-            return Response(response_data, status=status.HTTP_200_OK)
-        except User.DoesNotExist:
-            return Response({'error': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)
+#             response_data ={
+#                 'user': user_serializer.data,
+#                 'games': games_serializer.data,
+#                 'reviews': reviews_serializer.data
+#             }
+#             return Response(response_data, status=status.HTTP_200_OK)
+#         except User.DoesNotExist:
+#             return Response({'error': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 
 #USER
@@ -93,9 +93,6 @@ class LoginAndTokenView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
-
-        # print('received username', username)
-        # print('received password', password)
 
         user = authenticate(request, username=username, password=password)
         # print(user)
