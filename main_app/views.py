@@ -19,6 +19,18 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet): #will display the whole model 
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated] # if not authenticated we can't consume API
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        user_serializer = self.get_serializer(instance)
+        games_serializer = GameSerializer(instance.game_set.all(), many=True)
+        reviews_serializer = ReviewSerializer(instance.reviews.all(), many=True)
+
+        response_data = {
+            'user': user_serializer.data,
+            'games': games_serializer.data,
+            'reviews': reviews_serializer.data
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet): 
@@ -26,10 +38,21 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class GameViewSet(viewsets.ReadOnlyModelViewSet):
+class GameViewSet(viewsets.ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        game_serializer = self.get_serializer(instance)
+        reviews_serializer = ReviewSerializer(instance.reviews.all(), many=True)
+
+        response_data = {
+            'game': game_serializer.data,
+            'reviews': reviews_serializer.data
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
 class ReviewViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Review.objects.all()
@@ -40,8 +63,17 @@ class UserDetailView(APIView):
     def get(self, request, pk):
         try:
             user = User.objects.get(pk=pk)
-            serializer = UserSerializer(user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            print(user)
+            user_serializer = UserSerializer(user)
+            games_serializer = GameSerializer(user.game_set.all(), many=True)
+            reviews_serializer = ReviewSerializer(user.reviews.all(), many=True)
+
+            response_data ={
+                'user': user_serializer.data,
+                'games': games_serializer.data,
+                'reviews': reviews_serializer.data
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({'error': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -55,6 +87,8 @@ class CreateUserAPIView(APIView):
             return Response({'message':'user created ok', 'user_data':serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+# ORIGINAL LOGIN VIEW
 class LoginAndTokenView(APIView):
     def post(self, request):
         username = request.data.get('username')
@@ -82,6 +116,7 @@ class LoginAndTokenView(APIView):
         else:
             return JsonResponse({'message': 'Invalid credentials'}, status=401)
 
+
 class LogoutView(APIView):
     def post(self, request):
         token = request.data.get('token')
@@ -90,7 +125,7 @@ class LogoutView(APIView):
 
 #GAME
 class CreateGameAPIView(APIView):
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request):
         serializer = GameSerializer(data=request.data)

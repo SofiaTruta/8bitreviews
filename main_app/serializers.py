@@ -6,7 +6,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ['url', 'username', 'password', 'email', 'first_name', 'last_name']
+        fields = ['url', 'id','username', 'password', 'email', 'first_name', 'last_name']
 
     def create(self, data):
         user = User.objects.create_user(**data)

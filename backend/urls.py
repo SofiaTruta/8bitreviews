@@ -21,5 +21,5 @@ urlpatterns = [
     path('api/login', views.LoginAndTokenView.as_view()),
     path('api/logout', views.LogoutView.as_view()),
     path('get-csrf-token/', views.csrf_token_view),
-    path('users/<int:pk>/', views.UserDetailView.as_view())
+    # path('users/<int:pk>/', views.UserDetailView.as_view())
 ]
