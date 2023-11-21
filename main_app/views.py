@@ -79,7 +79,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 #         except User.DoesNotExist:
 #             return Response({'error': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-class SingleUserView(RetrieveAPIView):
+class UserForReviewView(RetrieveAPIView):
      def get(self, request, user_id):
         print(f"Received user ID from URL path: {user_id}")
         user = get_object_or_404(User, pk=user_id)
