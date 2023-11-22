@@ -32,7 +32,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '8bitreviews-backend-production.up.railway.app',
-    '8bitreviews-backend.railway.internal'
+    '8bitreviews-backend.railway.internal',
+    'localhost'
 ]
 
 
@@ -62,10 +63,11 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    '8bitreviews-backend.railway.internal',
-    '8bitreviews-backend-production.up.railway.app/',
+    'https://8bitreviews-backend.railway.internal',
+    'https://8bitreviews-backend-production.up.railway.app/',
     'https://*8bitreviews-backend-production.up.railway.app',
-    'https://*.railway.app/'
+    'https://*.railway.app/',
+    'http://localhost'
 ]
 
 ROOT_URLCONF = 'backend.urls'

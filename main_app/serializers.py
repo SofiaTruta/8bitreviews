@@ -21,9 +21,10 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 # GAME
 class GameSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    genres = serializers.ListSerializer(child=serializers.CharField(max_length=100), allow_empty=True)
     class Meta:
         model = Game
-        fields = ['id', 'title', 'genre', 'description', 'release_date', 'cover_url', 'user']
+        fields = ['id', 'name', 'genres', 'description', 'release_date', 'image_url', 'user']
 
 # REVIEW
 class ReviewSerializer(serializers.ModelSerializer):

@@ -1,12 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 
 class Game(models.Model):
-    title = models.CharField(max_length=100)
-    genre = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    genres = genres = ArrayField(models.CharField(max_length=50), blank=True) 
     description = models.TextField()
-    release_date = models.DateField()
-    cover_url = models.URLField(max_length=200)
+    release_date = models.DateTimeField()
+    image_url = models.URLField(max_length=200)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
