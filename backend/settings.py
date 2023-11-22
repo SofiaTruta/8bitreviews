@@ -30,7 +30,10 @@ SECRET_KEY = 'django-insecure-!k981_jjp#x+p^m%@@4z%j!22q+_*)@9(zt-#mrfteu_z0j*c=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '8bitreviews-backend-production.up.railway.app',
+    '8bitreviews-backend.railway.internal'
+]
 
 
 # Application definition
