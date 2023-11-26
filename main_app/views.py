@@ -21,10 +21,10 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated] # if not authenticated we can't consume API
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        user_serializer = self.get_serializer(instance)
-        games_serializer = GameSerializer(instance.game_set.all(), many=True)
+    def retrieve(self, request, *args, **kwargs): #override the built in one
+        instance = self.get_object() #fetches the specific user object based on request
+        user_serializer = self.get_serializer(instance)#grabs the serializer for this user
+        games_serializer = GameSerializer(instance.game_set.all(), many=True)#creates a specific serializer for all games connected to this user
         reviews_serializer = ReviewSerializer(instance.reviews.all(), many=True)
 
         response_data = {
@@ -45,7 +45,7 @@ class GameViewSet(viewsets.ModelViewSet):
     serializer_class = GameSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs): #same thing as above but just for a single game, grabs all data from that game + game specific reviews
         instance = self.get_object()
         game_serializer = self.get_serializer(instance)
         reviews_serializer = ReviewSerializer(instance.reviews.all(), many=True)
@@ -61,29 +61,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-# class UserDetailView(APIView):
-#     def get(self, request, pk):
-#         try:
-#             user = User.objects.get(pk=pk)
-#             print(user)
-#             user_serializer = UserSerializer(user)
-#             games_serializer = GameSerializer(user.game_set.all(), many=True)
-#             reviews_serializer = ReviewSerializer(user.reviews.all(), many=True)
 
-#             response_data ={
-#                 'user': user_serializer.data,
-#                 'games': games_serializer.data,
-#                 'reviews': reviews_serializer.data
-#             }
-#             return Response(response_data, status=status.HTTP_200_OK)
-#         except User.DoesNotExist:
-#             return Response({'error': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-class UserForReviewView(RetrieveAPIView):
-     def get(self, request, user_id):
+class UserForReviewView(RetrieveAPIView): #used to fetch user details for a specific review, from their id. get requests only
+     def get(self, request, user_id): #customize the get request
         print(f"Received user ID from URL path: {user_id}")
-        user = get_object_or_404(User, pk=user_id)
-        serialized_user = UserSerializer(user, context={'request': request})
+        user = get_object_or_404(User, pk=user_id) #django magic shortcut
+        serialized_user = UserSerializer(user, context={'request': request}) #it required the context but it's magic, no obvious reason why it would need more than the id
         return Response(serialized_user.data)
 
 #USER
@@ -102,17 +86,16 @@ class LoginAndTokenView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
 
-        user = authenticate(request, username=username, password=password)
-        # print(user)
+        user = authenticate(request, username=username, password=password) #built in django method. returns a user object if successful, else returns None
+    
         if user is not None:
-            login(request, user)
-            refresh = RefreshToken.for_user(user)
+            login(request, user) #also built in
+            refresh = RefreshToken.for_user(user) #this is django-rest-framework magic
 
             user_id=user.id
             username = user.username
-            print('username', username)
 
-            return JsonResponse({'message': 'Login successful',
+            return JsonResponse({'message': 'Login successful', #used JsonResponse because Response was not very happy with a longer message
                                  'user_id': user_id,
                                  'username': username,
                                  'refresh': str(refresh),
@@ -125,17 +108,16 @@ class LoginAndTokenView(APIView):
 class LogoutView(APIView):
     def post(self, request):
         token = request.data.get('token')
-        cache.set(token, 'logged_out', timeout=None)
+        cache.set(token, 'logged_out', timeout=None) #kind of blacklisting? lives there forever now
         return JsonResponse({'message': 'logged out successfully'})
 
 #GAME
 class CreateGameAPIView(APIView):
-    # authentication_classes = [TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated] #passed superuser credent
     def post(self, request):
         serializer = GameSerializer(data=request.data)
         if serializer.is_valid():
-            game = serializer.save()
+            game = serializer.save() #saves in db 
             return Response({'message':'game created ok', 'user_data':serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -154,7 +136,7 @@ class EditGameAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 # REVIEW
-class CreateReviewAPIView(APIView):
+class CreateReviewAPIView(APIView): #ended up not using this figured out how to user the ReviewViewSet
     def post(self, request, game_id):
         try:
             game = Game.objects.get(pk=game_id)

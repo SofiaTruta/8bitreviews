@@ -16,10 +16,11 @@ urlpatterns = [
     path('new-user/', views.CreateUserAPIView.as_view()),
     path('new-game/', views.CreateGameAPIView.as_view()),
     path('games/<int:game_id>/new-review', views.CreateReviewAPIView.as_view()),
-    # path('games/<int:game_id>/reviews/<int:review_id>', views.ReviewAPIView.as_view()),
     path('games/<int:game_id>/edit', views.EditGameAPIView.as_view()),
     path('api/login', views.LoginAndTokenView.as_view()),
     path('api/logout', views.LogoutView.as_view()),
     path('get-csrf-token/', views.csrf_token_view),
     path('rev-user/<int:user_id>', views.UserForReviewView.as_view())
 ]
+
+#some of these paths ended up not being used as I understood better how to use the viewsets
