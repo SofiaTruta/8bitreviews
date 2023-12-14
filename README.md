@@ -116,7 +116,7 @@ I kept a daily log of goals achieved each day to track the project's evolution.
 
 
 ### Day 5
-- Implemented functionalities to delete and edit reviews.
+- Implemented functionalities to delete and edit reviews, sending a post request from the JavaScript frontend to my Python Django-rest-framework backend, using the dynamic built-in capabilities of Django ViewSets. 
 
 
 ### Day 6
@@ -126,7 +126,7 @@ I kept a daily log of goals achieved each day to track the project's evolution.
 - Completed API-related functionalities.
 
 ### Day 7
-- Focused on styling aspects.
+- Focused on styling aspects, using React Bootstrap, including layout, hover animations, typography, colours, buttons and other small touches.
 
 ## Challenges
 
@@ -186,7 +186,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 ## Key Learnings
 
-Learning Python and the Django-rest-framework basics, as well as understanding relational databases.
+Learning Python and the Django-rest-framework basics, as well as understanding relational databases. Most of my previous experience was with MongoDB, so using a SQL based database is a very different experience, and there is much that I look forward to learning when it comes to creating relationships between tables and efficiently querying them.
 
 ## Known Bugs
 
