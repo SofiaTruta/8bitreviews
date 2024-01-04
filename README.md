@@ -68,7 +68,7 @@ In regards to planning, I used a Trello board initially to help me prioritise an
 I used LucidChart for my ERD.
 My project had 2 entities additionally to Django’s built in User and used One-to-Many relationships. 
 
-![ERD for project](https://i.imgur.com/aWC4HuSm.png)
+![ERD for project](https://i.imgur.com/kSZ1XGjm.png)
 ![wireframe](https://i.imgur.com/47jwbPam.png)
 ![wireframe](https://i.imgur.com/3MUqHMAm.png)
 
